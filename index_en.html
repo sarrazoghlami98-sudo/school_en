@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>The Haunted Saint-Clément Academy</title>
+<style>
+  :root{
+    --bg:#07090c; --ink:#eaf6ff; --muted:#98a9bb; --accent:#78e0ff;
+    --red:#ff4d5d; --ok:#9effb2; --glow:rgba(255,60,70,.55);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:radial-gradient(1300px 650px at 80% -10%, #0f1b22 0%, var(--bg) 55%) fixed;
+    color:var(--ink);
+    font:18px/1.85 ui-monospace,Menlo,Consolas,monospace;
+  }
+  .wrap{max-width:980px;margin:3vh auto;padding:18px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+  h1{margin:0;font-size:22px;letter-spacing:1px}
+  .sub{color:var(--muted);font-size:13px}
+
+  .term{
+    border:1px solid #1b2b35;border-radius:14px;overflow:hidden;
+    box-shadow:0 0 24px rgba(120,224,255,.12);
+    display:grid;
+    grid-template-rows: 45vh 1fr auto auto; /* adjust first value to change image height */
+    height:85vh;
+    background:#0c1318;
+  }
+  .bar{display:flex;gap:8px;padding:10px 12px;background:#0c1318;border-bottom:1px solid #1b2b35}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .dot:nth-child(1){background:#ff6a6a}.dot:nth-child(2){background:#ffd96a}.dot:nth-child(3){background:#6aff96}
+
+  .scene{grid-row:1;min-height:200px;background:center/contain no-repeat;position:relative}
+  .scene::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 160px rgba(0,0,0,.68);pointer-events:none}
+
+  #log{grid-row:2;overflow:auto;padding:24px 28px;background:linear-gradient(180deg,rgba(18,24,30,.45),rgba(11,14,18,.85))}
+  .line{margin:10px 0;word-break:break-word}
+  .me{color:var(--accent);font-weight:500}
+  .note{color:var(--muted)}
+  .good{color:var(--ok)}
+  .bad{color:var(--red)}
+
+  .choices{grid-row:3;display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;background:#0c1318;border-top:1px solid #1b2b35}
+  .choice{background:#10181f;border:1px solid #1b2b35;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--ink)}
+  .choice b{margin-right:6px;color:var(--accent)}
+  .choice:hover{filter:brightness(1.08)}
+
+  form{grid-row:4;display:flex;gap:10px;padding:8px 12px;background:#0c1318;border-top:1px solid #1b2b35}
+  #cmd{flex:1;background:#0a0f13;color:var(--ink);border:1px solid #1b2b35;border-radius:10px;padding:12px 14px;outline:none;font-size:17px}
+  #send{background:#13242c;color:var(--ink);border:1px solid #2a3c46;border-radius:10px;padding:10px 16px;cursor:pointer}
+  #send:hover{filter:brightness(1.08)}
+
+  .tray{position:absolute;left:12px;bottom:12px;background:rgba(6,8,11,.65);border:1px solid #1b2b35;border-radius:10px;padding:6px 10px;font-size:15px}
+  .tray b{letter-spacing:2px;color:var(--red);text-shadow:0 0 8px var(--glow)}
+  .flicker{animation:f 1.1s infinite}
+  @keyframes f{0%{opacity:.3}12%{opacity:.95}18%{opacity:.2}28%{opacity:1}52%{opacity:.6}62%{opacity:1}100%{opacity:.85}}
+
+  .bloody{
+    color:#ff2a3d;font-weight:600;
+    text-shadow:0 0 6px rgba(255,0,30,0.9),0 0 18px rgba(255,30,40,0.7),0 0 26px rgba(255,60,60,0.5);
+    animation:pulseRed 1.6s ease-in-out infinite;
+  }
+  @keyframes pulseRed{
+    0%,100%{text-shadow:0 0 6px rgba(255,0,30,0.9),0 0 18px rgba(255,30,40,0.7),0 0 26px rgba(255,60,60,0.5)}
+    50%{text-shadow:0 0 14px rgba(255,0,30,1),0 0 30px rgba(255,30,40,0.9),0 0 44px rgba(255,70,70,0.8)}
+  }
+
+  .flash{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .18s}
+  .flash.show{opacity:.92}
+  .face{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .18s}
+  .face.show{opacity:1}
+  .ghost-img{max-width:300px;width:50vw;height:auto;filter:drop-shadow(0 0 25px rgba(255,255,255,.45));animation:floaty 2s ease-in-out infinite alternate}
+  @keyframes floaty{from{transform:translateY(0) scale(1)}to{transform:translateY(-8px) scale(1.03)}}
+
+  /* Credits overlay */
+  .credits{position:fixed;inset:0;display:grid;place-items:center;background:#000;opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:9999}
+  .credits.show{opacity:1;pointer-events:auto}
+  .credits-bg{position:absolute;inset:0;background:#000 center/cover no-repeat;filter:brightness(.85)}
+  .credits-card{position:relative;max-width:720px;margin:0 16px;background:rgba(12,19,24,.88);border:1px solid #1b2b35;border-radius:16px;box-shadow:0 0 30px rgba(255,60,70,.15);padding:22px 20px;color:#eaf6ff;text-align:center}
+  .credits-title{color:#ff4d5d;text-shadow:0 0 8px rgba(255,60,70,.55);letter-spacing:8px;margin:0 0 8px 0}
+  .credits-actions{display:flex;gap:10px;justify-content:center;margin-top:10px}
+  .credits-btn{background:#10181f;border:1px solid #1b2b35;border-radius:10px;padding:10px 14px;color:#eaf6ff;cursor:pointer}
+  .credits-btn:hover{filter:brightness(1.08)}
+
+  /* Glitch orange */
+  .glitch{
+    position:relative;display:inline-block;color:#ff7a00;font-weight:700;
+    text-shadow:0 0 6px rgba(255,122,0,.8),0 0 18px rgba(255,90,0,.6);
+    animation:glitch-jitter 1.4s infinite steps(2,end);
+  }
+  .glitch::before,.glitch::after{content:attr(data-txt);position:absolute;left:0;top:0;opacity:.8}
+  .glitch::before{color:#ffa64d;transform:translate(1px,-1px);mix-blend-mode:screen}
+  .glitch::after{color:#ff3a00;transform:translate(-1px,1px);mix-blend-mode:screen}
+  @keyframes glitch-jitter{0%,39%,70%,100%{transform:translate(0)}40%{transform:translate(1px)}41%{transform:translate(-1px)}71%{transform:translateY(1px)}72%{transform:translateY(-1px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>The Haunted Saint-Clément Academy</h1>
+    <span class="sub">An eerie adventure in the Town of Mount Royal</span>
+  </header>
+
+  <div class="term">
+    <div class="bar"></div>
+    <div id="scene" class="scene"></div>
+    <div class="tray">CLUES: <b id="letters" class="flicker">_ _ _ _ _ _ _ _ _ _ _ _</b></div>
+    <div id="log"></div>
+    <div id="choices" class="choices" hidden></div>
+    <form id="io" autocomplete="off">
+      <input id="cmd" placeholder="Type A/B/C, 1/2/3, or the final word…"/>
+      <button id="send" type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<!-- Overlays -->
+<div id="flash" class="flash"></div>
+<div id="face" class="face" aria-hidden="true"><img id="faceImg" src="images/ghost.png" class="ghost-img" alt=""/></div>
+
+<!-- Credits -->
+<div id="credits" class="credits" aria-hidden="true">
+  <div id="creditsBg" class="credits-bg"></div>
+  <div class="credits-card">
+    <h2 class="credits-title">C R E D I T S</h2>
+    <p>Written by <b>Amin Rezgui</b> &amp; <b>SZ</b></p>
+    <p class="note">Fear is overcome with <b>perseverance</b>.</p>
+    <div class="credits-actions">
+      <button id="creditsWake" class="credits-btn" type="button">Exit</button>
+      <button id="creditsAgain" class="credits-btn" type="button">Play again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== DOM ===== */
+const logEl=document.getElementById('log'),sceneEl=document.getElementById('scene'),
+input=document.getElementById('cmd'),lettersEl=document.getElementById('letters'),
+flash=document.getElementById('flash'),face=document.getElementById('face'),
+faceImg=document.getElementById('faceImg'),choicesEl=document.getElementById('choices'),
+creditsEl=document.getElementById('credits'),creditsBg=document.getElementById('creditsBg'),
+creditsWake=document.getElementById('creditsWake'),creditsAgain=document.getElementById('creditsAgain');
+
+/* ===== STATE ===== */
+let userName="Student",freed=false,finalPhase=false,playAgainPhase=false,creditsTimer=null;
+const SECRET="PERSEVERANCE".split(''); // logic without accents
+let remaining=[...SECRET],found=[],iScene=0,finalHelpStep=0;
+
+/* ===== AUDIO (full set, no port-control) ===== */
+const SFX={
+  ambient:"sounds/eerie-ambiance.mp3",
+  intro:"sounds/intro.mp3",
+  door:"sounds/open_door_sound.mp3",
+  creak:"sounds/rechinar-de-puerta-squeaking-door.mp3",
+  glass:"sounds/glass-shatter.mp3",
+  whisper:"sounds/creepy-ghost-whisper.mp3",
+  whisperICU:"sounds/i-see-you-creepy-ghost-whisper.mp3",
+  evilLaugh:"sounds/evil-laugh.mp3",
+  woman:"sounds/female-horror-voice.mp3",
+  light:"sounds/flickeringlight.mp3",
+  steps:"sounds/footsteps-on-gravel.mp3",
+  scream:"sounds/distant-demonic-scream-and-debris.mp3",
+  knock:"sounds/knock-on-a-door.mp3",
+  knock2:"sounds/knock-on-the-door.mp3",
+  badge:"sounds/badge.mp3",
+  phone:"sounds/unavailable-phone.mp3",
+  scratching:"sounds/scratching.mp3",
+  musicBox:"sounds/scary-music-box.mp3"
+};
+let ambient=null;
+function play(name,vol=0.9){try{const a=new Audio(SFX[name]||name);a.volume=vol;a.play();}catch(e){}}
+function startAmbient(){
+  try{
+    ambient=new Audio(SFX.ambient); ambient.loop=true; ambient.volume=0.35;
+    const resume=()=>{ambient.play().catch(()=>{});window.removeEventListener('pointerdown',resume);window.removeEventListener('keydown',resume);}
+    const p=ambient.play();
+    if(p&&p.catch){p.catch(()=>{window.addEventListener('pointerdown',resume,{once:true});window.addEventListener('keydown',resume,{once:true});});}
+  }catch(e){}
+}
+
+/* ===== HELPERS ===== */
+function say(h,cls='note'){const d=document.createElement('div');d.className='line '+cls;d.innerHTML=h;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+function me(t){say('› '+t,'me');}
+function setScene(f){sceneEl.style.backgroundImage='url(images/'+f+')';}
+function refreshTray(){lettersEl.textContent=found.concat(Array(SECRET.length-found.length).fill('_')).join(' ');}
+function flicker(lightFile,darkFile){let t=0,flips=8;(function loop(){setScene(t%2===0?lightFile:darkFile);t++;if(t<=flips)setTimeout(loop,120+Math.random()*100);else setScene(lightFile);})();}
+
+function showOverlay(img,sfx){try{faceImg.src='images/'+img;}catch(e){}flash.classList.add('show');face.classList.add('show');play(sfx||'scream',0.9);setTimeout(()=>{flash.classList.remove('show');face.classList.remove('show');},650);}
+
+/* ===== LETTERS ===== */
+function giveLetters(n=1,silent=false){
+  for(let i=0;i<n && remaining.length;i++){
+    const idx=Math.floor(Math.random()*remaining.length);
+    const [L]=remaining.splice(idx,1);
+    found.push(L);
+    if(!silent) say('A red mark appears: <b class="bloody">'+L+'</b>.','ghost');
+  }
+  refreshTray();
+}
+
+/* ===== CREDITS ===== */
+function openCredits(){
+  creditsEl.classList.add('show');
+  let on=false; creditsBg.style.backgroundImage="url(images/credit_dark.png)";
+  clearInterval(creditsTimer);
+  creditsTimer=setInterval(()=>{on=!on;creditsBg.style.backgroundImage=on?"url(images/credit_light.png)":"url(images/credit_dark.png)";},350);
+  play('musicBox',0.7);
+}
+creditsWake.onclick=()=>{clearInterval(creditsTimer);creditsEl.classList.remove('show');};
+creditsAgain.onclick=()=>{clearInterval(creditsTimer);stopAllAudio();creditsEl.classList.remove('show');restartGame();};
+// Stop all audio (ambient and any sound effects)
+function stopAllAudio() {
+  try {
+    if (ambient) {
+      ambient.pause();
+      ambient.currentTime = 0;
+      ambient = null;
+    }
+  } catch (e) {}
+
+  // Stop all currently playing sound effects
+  document.querySelectorAll("audio").forEach(a => {
+    try {
+      a.pause();
+      a.currentTime = 0;
+    } catch (e) {}
+  });
+}
+
+/* ===== SCENES ===== */
+const SCENES=[
+
+/* 1) ENTRANCE — “a draft…” + choices */
+{
+  id:"entree",
+  file:"ecole_entree.png",
+  enter:"A draft passes behind you.",
+  challenge:"A screen flickers: <span class='glitch' data-txt='WELCOME TO SAINT-CLÉMENT ACADEMY'>WELCOME TO SAINT-CLÉMENT ACADEMY</span>.",
+  choices:[
+    {text:"Call 911", kind:"flavor", response:"The line crackles, then cuts. No one answers.", sfx:"phone"},
+    {text:"Look at the screen", kind:"correct", response:"The cursor hesitates… and a cackle echoes through the hall.", sfx:"evilLaugh"},
+    {text:"Push the door", kind:"flavor", response:"The door opens a little, then closes on its own.", sfx:"door"}
+  ],
+  sfx:"whisper"
+},
+
+/* 2) HALLWAY — flicker; invites to MOVE */
+{
+  id:"couloir",
+  fileLight:"couloir_light.png",
+  fileDark:"couloir_dark.png",
+  enter:"The hallway stretches into darkness. A cold breath pushes you forward.",
+  challenge:"Staying here gives you goosebumps. Crossing would be safer…",
+  choices:[
+    {text:"Look behind you",kind:"flavor",response:"Scratching runs along the wall… then stops.",sfx:"scratching"},
+    {text:"Stand still",kind:"flavor",response:"The neon lights buzz to drive you away.",sfx:"light"},
+    {text:"Move forward",kind:"correct",response:"You walk. The lamps flicker violently above you.",sfx:"steps"}
+  ],
+  sfx:"steps",
+  flicker:true
+},
+
+/* 3) BATHROOM — mirror makes sense; reflection out of sync; A hints it wants your name */
+{
+  id:"miroir",
+  file:"salle_miroir.png",
+  enter:"The bathroom is freezing. In the mirror, your reflection follows you… with a slight delay.",
+  challenge:"When you move, it moves too… but not exactly like you.",
+  choices:[
+    {text:"Examine the mirror",kind:"flavor",response:"Your reflection tilts its head off-beat. The mirror seems to want your name.",sfx:"whisper"},
+    {text:"Hit the sink",kind:"flavor",response:"The impact echoes; a drop falls somewhere.",sfx:"creak"},
+    {text:"Say your first name",kind:"correct",response:"Your reflection smiles for too long. A red letter slides down the glass.",sfx:"scream"}
+  ],
+  sfx:"glass",
+  ghostCue:true
+},
+
+/* 4) LIBRARY — zombie jumpscare here */
+{
+  id:"bibliotheque",
+  file:"bibliotheque_hantee.png",
+  enter:"The library smells of dust. Pages turn by themselves.",
+  challenge:"A whisper guides you: “Read what awaits you…”",
+  choices:[
+    {text:"Read the open page",kind:"correct",response:"The lines twist and trace a red sign.",sfx:"whisper"},
+    {text:"Whisper “Who’s there?”",kind:"flavor",response:"“Always here…” breathes a voice too close.",sfx:"whisperICU"},
+    {text:"Search under the tables",kind:"flavor",response:"Ancient claw marks.",sfx:"steps"}
+  ],
+  sfx:"scream",
+  zombieCue:true
+},
+
+/* 5) CAFETERIA — no jumpscare; mood only */
+{
+  id:"cafeteria",
+  file:"cafeteria_ecole.png",
+  enter:"The cafeteria is deserted. Trays still tremble slightly, as if someone just passed by.",
+  challenge:"The glow from drawn pumpkins dances on the walls.",
+  choices:[
+    {text:"Shout to test the echo",kind:"flavor",response:"A distant rumble answers you.",sfx:"scream"},
+    {text:"Hide under a table",kind:"flavor",response:"The metal vibrates under your breath.",sfx:"creak"},
+    {text:"Walk between the rows",kind:"correct",response:"You advance among the tables. A red mark appears on the tile.",sfx:"steps"}
+  ],
+  sfx:"light"
+},
+
+/* 6) CLASSROOM — board shows P—R***ance; “Read the letters” silently adds 4 letters */
+{
+  id:"classe",
+  file:"salle_classe.png",
+  enter:"On the board, you can make out: “<b>P—R***ance</b>” scrawled in a hurry.",
+  challenge:"Looks like a scrambled word…",
+  choices:[
+    {text:"Look at the board",kind:"flavor",response:"The chalk trembles by itself, as if someone writes quietly.",sfx:"light"},
+    {text:"Read the letters",kind:"classLetters",response:"You’re almost there… <b>Read louder!</b>",sfx:"whisperICU"},
+    {text:"Move a chair",kind:"flavor",response:"A piercing squeal echoes.",sfx:"creak"}
+  ],
+  sfx:"light",
+  shadowCue:true
+},
+
+/* 7) GYM — catch the ball is correct */
+{
+  id:"gymnase",
+  file:"gymnase_sombre.png",
+  enter:"The gym creaks. A ball slowly rolls toward you.",
+  challenge:"It looks like someone passed it to you.",
+  choices:[
+    {text:"Kick the ball",kind:"flavor",response:"The sound echoes for too long.",sfx:"knock"},
+    {text:"Look at the bleachers",kind:"flavor",response:"Tracks go up and… come back.",sfx:"steps"},
+    {text:"Catch the ball",kind:"correct",response:"You catch it. A red glow appears on the wall.",sfx:"light"}
+  ],
+  sfx:"steps"
+},
+
+/* 8) WALL — blowing the dust = correct */
+{
+  id:"mur",
+  file:"mur_symboles.png",
+  enter:"In the basement, the stone breathes faintly like a sleeping heart.",
+  challenge:"Your hand approaches: the dust shivers.",
+  choices:[
+    {text:"Blow the dust",kind:"correct",response:"The grains scatter and reveal a red letter.",sfx:"whisper"},
+    {text:"Touch the stone",kind:"flavor",response:"The surface is warm and pulsing.",sfx:"woman"},
+    {text:"Step back",kind:"flavor",response:"Something passes behind you.",sfx:"scratching"}
+  ],
+  sfx:"evilLaugh"
+}
+
+];
+
+/* ===== FLOW ===== */
+function enter(n){
+  iScene=n;
+  const sc=SCENES[iScene];
+  choicesEl.hidden=true;choicesEl.innerHTML='';
+
+  if(sc.id==='couloir'){
+    flicker(sc.fileLight||'couloir_light.png', sc.fileDark||'couloir_dark.png'); // ends on LIGHT
+    play('light',1);
+  }else{
+    setScene(sc.file);
+    if(sc.sfx) play(sc.sfx,1);
+  }
+
+  say(sc.enter,'note');
+  if(sc.challenge) say(sc.challenge,'note');
+
+  showChoices(sc.choices);
+
+  // Planned jump-scares, not random
+  if(sc.ghostCue){ setTimeout(()=>showOverlay('ghost.png','whisperICU'),600); }
+  if(sc.zombieCue){ setTimeout(()=>showOverlay('zombie.png','scream'),600); }
+  if(sc.shadowCue){ setTimeout(()=>showOverlay('shadow.png','woman'),550); }
+}
+function nextScene(){ if(iScene<SCENES.length-1) enter(iScene+1); else finishLetters(); }
+
+/* Award exactly ONE letter per challenge (except the special classroom action) */
+function awardOneLetterAndContinue(){
+  giveLetters(1,false);
+  setTimeout(()=>{ remaining.length? nextScene(): finishLetters(); }, 900);
+}
+
+/* ===== FINAL PHASE ===== */
+const FINAL_CHOICES=[
+  {text:"Ask for a hint (A)",kind:"final"},
+  {text:"Ask for a hint (B)",kind:"final"},
+  {text:"Ask for a hint (C)",kind:"final"}
+];
+function finalHelpPrompt(){
+  // 3 distinct hints, then reveal letters from the 4th request
+  if(finalHelpStep===0){
+    say("Hint: at school, this value helps you <b>continue a hard exercise</b> without giving up.",'note');
+  }else if(finalHelpStep===1){
+    say("Hint: in life, it helps you <b>start again after a mistake</b>.",'note');
+  }else if(finalHelpStep===2){
+    say("Hint: <b>the order of the letters matters</b>. Think calmly and arrange the word.",'note');
+  }else if(finalHelpStep===3){
+    say("First letters: <b>P</b>…",'note');
+  }else if(finalHelpStep===4){
+    say("More letters: <b>PERS</b>…",'note');
+  }else{
+    say("Full word: <span class='glitch' data-txt='PERSEVERANCE'>PERSEVERANCE</span>.",'note');
+  }
+  finalHelpStep++;
+}
+
+function finishLetters(){
+  finalPhase=true;
+  setScene('couloir_light.png'); // as requested (not the entrance)
+  hideChoices();
+  say("<span class='bloody'>You’ve gathered all the letters, "+userName+".</span>",'ghost');
+  say("Type the <b>full word</b> to break the curse, or ask for a hint.",'note');
+  showChoices(FINAL_CHOICES);
+}
+
+function win(){
+  if(freed) return;
+  freed=true;
+  setScene('final_reveal.png');
+  play('door',0.9);
+  say("<span class='good'>Morning light pours through the windows. The school breathes again.</span>",'ghost');
+  say('“Thank you, <b>'+userName+'</b>.”');
+
+  // End choices (credits only if requested)
+  const endChoices=[
+    {text:"Play again",kind:"restart"},
+    {text:"Show credits",kind:"credits"}
+  ];
+  showChoices(endChoices);
+}
+
+/* ===== CHOICES ===== */
+function showChoices(choices){
+  if(!choices||!choices.length){choicesEl.hidden=true;return;}
+  choicesEl.innerHTML='';
+  choices.slice(0,3).forEach((c,idx)=>{
+    const btn=document.createElement('button');btn.type='button';btn.className='choice';
+    const key=['A','B','C'][idx]||'';
+    btn.dataset.key=key;btn.dataset.kind=c.kind||'flavor';
+    btn.innerHTML=`<b>${key}</b> ${c.text}`;
+    btn.addEventListener('click',()=>selectChoice(key,choices));
+    choicesEl.appendChild(btn);
+  });
+  choicesEl.hidden=false;
+}
+function hideChoices(){choicesEl.hidden=true;}
+
+function selectChoice(key, list){
+  const idx={'A':0,'B':1,'C':2}[key]; const choice=list[idx]; if(!choice) return;
+  me(`[${key}] ${choice.text}`);
+  if(choice.response) say(choice.response,'ghost');
+  if(choice.sfx) play(choice.sfx,1);
+
+  if(finalPhase){
+    if(choice.kind==='final'){ finalHelpPrompt(); return; }
+    if(choice.kind==='restart'){ restartGame(); return; }
+    if(choice.kind==='credits'){ openCredits(); return; }
+  }
+
+  // classroom special: silently add 4 letters
+  if(SCENES[iScene].id==='classe' && choice.kind==='classLetters'){
+    giveLetters(4,true); // silently update tray
+    setTimeout(()=>{ remaining.length? nextScene(): finishLetters(); }, 900);
+    return;
+  }
+
+  if(choice.kind==='correct'){ awardOneLetterAndContinue(); return; };
+
+  // Wrong answers: mild guidance
+/*  say("Think… what would you really do in this situation?",'note');*/
+}
+
+/* ===== INPUT ===== */
+function handle(txt){
+  txt=txt.trim(); if(!txt) return; me(txt);
+
+  if(finalPhase){
+    // accept with/without accents, any case
+    const cleaned=txt.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+    if(cleaned==="PERSEVERANCE") return win();
+    finalHelpPrompt(); return;
+  }
+
+  if(/^[ABC123]$/i.test(txt)){ const map={'1':'A','2':'B','3':'C'}; return selectChoice(map[txt.toUpperCase()]||txt.toUpperCase(), SCENES[iScene].choices); }
+}
+
+/* ===== INTRO ===== */
+function intro(){
+  startAmbient();
+  setScene('ecole_entree.png');
+  play('intro',0.7);
+
+  say("The bell rang long ago, but you’ve <b>come back to school</b> to grab the bag you left in class.",'note');
+  say("The school feels different; you approach the door, slowly.",'note');
+  say("A voice whispers: <span class='bloody'>Who’s there?</span> Type your first name.",'note');
+}
+
+let waitingName=true;
+document.getElementById('io').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=input.value.trim(); input.value='';
+  if(waitingName){
+    if(v){
+      userName=v.replace(/[<>]/g,''); waitingName=false;
+      say("Good evening, <b>"+userName+"</b>. Move forward without looking back.",'ghost');
+      // Give one letter immediately upon giving the name
+      giveLetters(1,false);
+      enter(0); // go to Entrance scene
+    }else{
+      say("<span class='bad'>The spirits want to know your name…</span>",'ghost');
+    }
+    return;
+  }
+  handle(v);
+});
+
+window.onload=intro;
+
+/* ===== UTILS ===== */
+function restartGame(){
+  freed=false;finalPhase=false;found=[];remaining=[...SECRET];refreshTray();
+  iScene=0;finalHelpStep=0;logEl.innerHTML='';
+  say("The night begins again…",'note');
+  enter(0);
+}
+</script>
+</body>
+</html>
