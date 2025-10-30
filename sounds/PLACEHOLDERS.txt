@@ -1,0 +1,12 @@
+This folder should contain the following mp3 files (place real audio files here):
+
+- eerie-ambiance.mp3
+- open_door_sound.mp3
+- rechinar-de-puerta-squeaking-door.mp3
+- glass-shatter.mp3
+- creepy-ghost-whisper.mp3
+- evil-laugh.mp3
+- scary_laugh.mp3
+- distant-demonic-scream-and-debris.mp3
+
+Note: The project includes placeholder SVG images in `images/`. Replace these text placeholders and add real MP3s into this `sounds/` folder for audio playback in-browser.
