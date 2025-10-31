@@ -248,12 +248,12 @@ const SCENES=[
 {
   id:"entree",
   file:"ecole_entree.png",
-  enter:"A draft passes behind you.",
+  enter:"A cold draft brushes the back of your neck.",
   challenge:"A screen flickers: <span class='glitch' data-txt='WELCOME TO SAINT-CLÉMENT ACADEMY'>WELCOME TO SAINT-CLÉMENT ACADEMY</span>.",
   choices:[
     {text:"Call 911", kind:"flavor", response:"The line crackles, then cuts. No one answers.", sfx:"phone"},
-    {text:"Look at the screen", kind:"correct", response:"The cursor hesitates… and a cackle echoes through the hall.", sfx:"evilLaugh"},
-    {text:"Push the door", kind:"flavor", response:"The door opens a little, then closes on its own.", sfx:"door"}
+    {text:"Look at the screen", kind:"correct", response:"The cursor blinks… and a cackle echoes through the hall.", sfx:"evilLaugh"},
+    {text:"Push the door", kind:"flavor", response:"The door opens a little, then closes by itself.", sfx:"door"}
   ],
   sfx:"whisper"
 },
@@ -279,11 +279,11 @@ const SCENES=[
   id:"miroir",
   file:"salle_miroir.png",
   enter:"The bathroom is freezing. In the mirror, your reflection follows you… with a slight delay.",
-  challenge:"When you move, it moves too… but not exactly like you.",
+  challenge:"It copies your moves with a creepy smile.",
   choices:[
     {text:"Examine the mirror",kind:"flavor",response:"Your reflection tilts its head off-beat. The mirror seems to want your name.",sfx:"whisper"},
-    {text:"Hit the sink",kind:"flavor",response:"The impact echoes; a drop falls somewhere.",sfx:"creak"},
-    {text:"Say your first name",kind:"correct",response:"Your reflection smiles for too long. A red letter slides down the glass.",sfx:"scream"}
+    {text:"Hit the sink",kind:"flavor",response:"The sound echoes. A drop of water falls somewhere.",sfx:"creak"},
+    {text:"Say your first name",kind:"correct",response:"Your reflection smiles for too long. A red letter slides down the glass.",sfx:"woman"}
   ],
   sfx:"glass",
   ghostCue:true
@@ -293,14 +293,13 @@ const SCENES=[
 {
   id:"bibliotheque",
   file:"bibliotheque_hantee.png",
-  enter:"The library smells of dust. Pages turn by themselves.",
+  enter:"The library smells of dust. Pages turn on their own.",
   challenge:"A whisper guides you: “Read what awaits you…”",
   choices:[
     {text:"Read the open page",kind:"correct",response:"The lines twist and trace a red sign.",sfx:"whisper"},
     {text:"Whisper “Who’s there?”",kind:"flavor",response:"“Always here…” breathes a voice too close.",sfx:"whisperICU"},
-    {text:"Search under the tables",kind:"flavor",response:"Ancient claw marks.",sfx:"steps"}
+    {text:"Search under the tables",kind:"flavor",response:"Old claw marks.",sfx:"steps"}
   ],
-  sfx:"scream",
   zombieCue:true
 },
 
@@ -309,25 +308,25 @@ const SCENES=[
   id:"cafeteria",
   file:"cafeteria_ecole.png",
   enter:"In the cafeteria… a monster is devouring a sandwich! It doesn’t see you, as if you were a ghost.",
-  challenge:"Trays tremble slightly, and lanterns light dances on the walls.",
+  challenge:"Trays tremble slightly. Lanterns light dances on the walls. One floor tile looks different.",
   choices:[
-    {text:"Shout to test the echo",kind:"flavor",response:"A distant rumble answers you.",sfx:"scream"},
+    {text:"Shout at the monster",kind:"flavor",response:"The monster stops chewing and looks around.",sfx:"scream"},
     {text:"Hide under a table",kind:"flavor",response:"The metal vibrates under your breath.",sfx:"creak"},
-    {text:"Walk between the rows",kind:"correct",response:"You advance among the tables. A red mark appears on the tile.",sfx:"steps"}
+    {text:"Walk between the rows",kind:"correct",response:"You advance among the tables. A letter glows from the tile.",sfx:"steps"}
   ],
-  sfx:"light"
+  sfx:"scream"
 },
 
 /* 6) CLASSROOM */
 {
   id:"classe",
   file:"salle_classe.png",
-  enter:"On the board, you can make out: “<b>P—R***ance</b>” scrawled in a hurry.",
+  enter:"On the board, you see: “<b>P—R***ance</b>” written in a hurry.",
   challenge:"Looks like a scrambled word…",
   choices:[
-    {text:"Look at the board",kind:"flavor",response:"The chalk trembles by itself, as if someone writes quietly.",sfx:"light"},
+    {text:"Look at the board",kind:"flavor",response:"The chalk trembles on its own, as if someone is writing.",sfx:"light"},
     {text:"Read the letters",kind:"classLetters",response:"You’re almost there… <b>Read louder!</b>",sfx:"whisperICU"},
-    {text:"Move a chair",kind:"flavor",response:"A piercing squeal echoes.",sfx:"creak"}
+    {text:"Move a chair",kind:"flavor",response:"A loud squeak echoes.",sfx:"creak"}
   ],
   sfx:"light",
   shadowCue:true
