@@ -434,9 +434,12 @@ function win(){
   say("<span class='good'>Morning light pours through the windows. The school breathes again.</span>",'ghost');
   say('“Thank you, <b>'+userName+'</b>.”');
 
-  const endChoices=[
+ /* const endChoices=[
     {text:"Play again",kind:"restart"},
     {text:"Show credits",kind:"credits"}
+  ]; */
+       const endChoices=[
+    {text:"Play again",kind:"restart"}
   ];
   showChoices(endChoices);
 }
